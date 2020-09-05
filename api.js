@@ -82,28 +82,35 @@ app.post("/", jsonParser, (req, res) => {
                 res.status(400).json({ "error": err.message })
                 return;
             }
-            res.status(201).json({
-                "lirixId": this.lastID
-            })
+            setTimeout(function() {
+
+                res.status(201).json({
+                    "lirixId": this.lastID
+                })
+            }, 1000)
+
         });
 });
 
 // PUT
-app.patch("/lirix/", (req, res, next) => {
+app.patch("/", jsonParser, (req, res) => {
     var reqBody = req.body;
-    db.run(`UPDATE lirix set last_name = ?, first_name = ?, title = ?, address = ?, country_code = ? WHERE employee_id = ?`, [reqBody.last_name, reqBody.first_name, reqBody.title, reqBody.address, reqBody.country_code, reqBody.employee_id],
+    console.log(reqBody);
+    db.run(`UPDATE lirix set title = ?, bodyText = ?, authorId = ? WHERE lirixId = ?`, [reqBody.title, reqBody.bodyText, reqBody.authorId, reqBody.lirixId],
         function(err, result) {
             if (err) {
                 res.status(400).json({ "error": res.message })
                 return;
             }
-            res.status(200).json({ updatedID: this.changes });
+            setTimeout(function() {
+                res.status(200).json({ updatedID: this.changes });
+            }, 1000)
         });
 });
 
 // DELETE
 
-app.delete("/:id", (req, res, next) => {
+app.delete("/:id", (req, res) => {
     db.run(`DELETE FROM lirix WHERE lirixId = ?`,
         req.params.id,
         function(err, result) {
@@ -111,6 +118,8 @@ app.delete("/:id", (req, res, next) => {
                 res.status(400).json({ "error": res.message })
                 return;
             }
-            res.status(200).json({ deletedID: this.changes })
+            setTimeout(function() {
+                res.status(200).json({ deletedID: this.changes })
+            }, 1000)
         });
 });
