@@ -28,7 +28,7 @@ const dbCallback = (err) => {
         db.run('CREATE TABLE lirix( \
             lirixId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
             title NVARCHAR(20)  NOT NULL,\
-            bodyText TEXT(20)  NOT NULL,\
+            bodyText BLOB  NOT NULL,\
             authorId NVARCHAR(20)  NOT NULL\
         )', (err) => {
             if (err) {
@@ -103,8 +103,8 @@ app.patch("/lirix/", (req, res, next) => {
 
 // DELETE
 
-app.delete("/lirix/:id", (req, res, next) => {
-    db.run(`DELETE FROM user WHERE id = ?`,
+app.delete("/:id", (req, res, next) => {
+    db.run(`DELETE FROM lirix WHERE lirixId = ?`,
         req.params.id,
         function(err, result) {
             if (err) {
