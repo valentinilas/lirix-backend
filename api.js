@@ -3,7 +3,6 @@ const express = require("express");
 var app = express();
 var bodyParser = require('body-parser')
 var cors = require('cors');
-const e = require('express');
 
 // create application/json parser
 var jsonParser = bodyParser.json()
@@ -63,7 +62,7 @@ const db = new sqlite3.Database('./lirix-data.db', dbCallback);
 
 
 // GET
-app.get("/:id", (req, res) => {
+app.get("/api/:id", (req, res) => {
     var params = [req.params.id]
     db.get(`SELECT * FROM lirix where lirixId = ?`, [req.params.id], (err, row) => {
         if (err) {
@@ -75,7 +74,7 @@ app.get("/:id", (req, res) => {
     });
 });
 
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
     db.all("SELECT lirixId,title,bodyText,timestamp,authorName FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId", [], (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
@@ -91,7 +90,7 @@ app.get("/", (req, res) => {
 // INNER JOIN B on B.f = A.f;
 
 // POST
-app.post("/", jsonParser, (req, res) => {
+app.post("/api/", jsonParser, (req, res) => {
     var reqBody = req.body;
     console.log('reqBody', reqBody);
     db.run(`INSERT INTO lirix (title,bodyText,authorId) VALUES (?,?,?)`, [reqBody.title, reqBody.bodyText, reqBody.authorId],
@@ -111,7 +110,7 @@ app.post("/", jsonParser, (req, res) => {
 });
 
 // PUT
-app.patch("/", jsonParser, (req, res) => {
+app.patch("/api/", jsonParser, (req, res) => {
     var reqBody = req.body;
     console.log(reqBody);
     db.run(`UPDATE lirix set title = ?, bodyText = ?, authorId = ? WHERE lirixId = ?`, [reqBody.title, reqBody.bodyText, reqBody.authorId, reqBody.lirixId],
@@ -128,7 +127,7 @@ app.patch("/", jsonParser, (req, res) => {
 
 // DELETE
 
-app.delete("/:id", (req, res) => {
+app.delete("/api/:id", (req, res) => {
     db.run(`DELETE FROM lirix WHERE lirixId = ?`,
         req.params.id,
         function(err, result) {
