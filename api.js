@@ -3,6 +3,7 @@ const express = require("express");
 var app = express();
 var bodyParser = require('body-parser')
 var cors = require('cors');
+const e = require('express');
 
 // create application/json parser
 var jsonParser = bodyParser.json()
@@ -25,11 +26,12 @@ const dbCallback = (err) => {
         console.error("Error opening database " + err);
     } else {
         console.log("Connected to the database.")
-        db.run('CREATE TABLE lirix( \
+        db.run('CREATE TABLE IF NOT EXISTS lirix( \
             lirixId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
             title NVARCHAR(20)  NOT NULL,\
             bodyText BLOB  NOT NULL,\
-            authorId NVARCHAR(20)  NOT NULL\
+            authorId INTEGER  NOT NULL,\
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP\
         )', (err) => {
             if (err) {
                 console.log("Table already exists. No new table has been created.");
@@ -40,6 +42,16 @@ const dbCallback = (err) => {
             // db.run(insert, ["TestTitle2", "TestBodyText2", 2]);
 
         });
+
+        db.run('CREATE TABLE IF NOT EXISTS authors (authorId INTEGER PRIMARY KEY, authorName NVARCHAR(20)  NOT NULL)', (err) => {
+            if (err) {
+                console.log(err);
+            }
+            // else {
+            //     db.run('INSERT INTO authors (authorId, authorName) VALUES (?,?)', [0, "Vali"]);
+            //     db.run('INSERT INTO authors (authorId, authorName) VALUES (?,?)', [1, "Cosmin"]);
+            // }
+        })
     }
 }
 
@@ -58,19 +70,25 @@ app.get("/:id", (req, res) => {
             res.status(400).json({ "error": err.message });
             return;
         }
+
         res.status(200).json(row);
     });
 });
 
 app.get("/", (req, res) => {
-    db.all("SELECT * FROM lirix", [], (err, rows) => {
+    db.all("SELECT lirixId,title,bodyText,timestamp,authorName FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId", [], (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
         }
+        console.log(rows);
         res.status(200).json({ rows });
     });
 });
+
+// SELECT a1, a2, b1, b2
+// FROM A
+// INNER JOIN B on B.f = A.f;
 
 // POST
 app.post("/", jsonParser, (req, res) => {
