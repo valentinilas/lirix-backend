@@ -64,7 +64,7 @@ const db = new sqlite3.Database('./lirix-data.db', dbCallback);
 // GET
 app.get("/api/:id", (req, res) => {
     var params = [req.params.id]
-    db.get(`SELECT * FROM lirix where lirixId = ?`, [req.params.id], (err, row) => {
+    db.get(`SELECT lirixId,title,bodyText,timestamp,authorName,authors.authorId FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId where lirixId = ?`, [req.params.id], (err, row) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
@@ -73,9 +73,9 @@ app.get("/api/:id", (req, res) => {
         res.status(200).json(row);
     });
 });
-
+// SELECT lirixId,title,bodyText,timestamp,authorName,authorId FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId
 app.get("/api/", (req, res) => {
-    db.all("SELECT lirixId,title,bodyText,timestamp,authorName FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId", [], (err, rows) => {
+    db.all("SELECT lirixId,title,bodyText,timestamp,authorName,authors.authorId FROM lirix INNER JOIN authors ON authors.authorId = lirix.authorId", [], (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
