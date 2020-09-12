@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3');
 const express = require("express");
 var app = express();
 var bodyParser = require('body-parser')
-var cors = require('cors');
+    // var cors = require('cors');
 
 // create application/json parser
 var jsonParser = bodyParser.json()
@@ -10,7 +10,7 @@ var jsonParser = bodyParser.json()
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-app.use(cors());
+// app.use(cors());
 
 const HTTP_PORT = 8000;
 
